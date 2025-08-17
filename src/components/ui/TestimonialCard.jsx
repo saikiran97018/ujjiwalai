@@ -1,11 +1,14 @@
 import React from 'react';
 
-const TestimonialCard = ({ stars, quote, initials, name, position }) => {
+const TestimonialCard = ({ stars = 5, quote, initials, name, position }) => {
   return (
-    <div className="testimonial-card bg-gray-50 p-8 rounded-xl border border-gray-200">
+    <div className="testimonial-card bg-gray-50 p-8 rounded-xl border border-gray-200 shadow-md">
       <div className="flex mb-4">
         {[...Array(5)].map((_, i) => (
-          <i key={i} className="fas fa-star text-yellow-400"></i>
+          <i 
+            key={i} 
+            className={`fas fa-star ${i < stars ? 'text-yellow-400' : 'text-gray-300'}`}>
+          </i>
         ))}
       </div>
       <p className="text-gray-600 mb-6">"{quote}"</p>

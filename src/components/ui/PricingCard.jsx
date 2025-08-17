@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-const PricingCard = ({ title, price, features, popular = false, buttonText, buttonVariant = "primary" }) => {
+const PricingCard = ({ title, price, features, popular = false, buttonVariant = "primary", children }) => {
   return (
     <div className={`bg-white p-8 rounded-xl border ${popular ? 'border-2 border-primary shadow-lg relative' : 'border-gray-200'} text-center`}>
       {popular && (
@@ -26,9 +26,8 @@ const PricingCard = ({ title, price, features, popular = false, buttonText, butt
           </li>
         ))}
       </ul>
-      <button className={`w-full ${buttonVariant === 'primary' ? 'bg-primary hover:bg-secondary' : buttonVariant === 'gray' ? 'bg-gray-800 hover:bg-gray-900' : 'bg-gray-200'} text-white font-medium py-3 px-6 rounded-lg transition`}>
-        {buttonText}
-      </button>
+      {/* Render payment button or custom button */}
+      {children}
     </div>
   );
 };

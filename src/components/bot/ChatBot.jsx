@@ -1,116 +1,133 @@
 import React, { useState, useEffect, useRef } from "react";
-import { marked } from "marked";
 import "./ChatBot.css";
 
-const languages = {
-  English: "en", Hindi: "hi", Bengali: "bn", Telugu: "te", Marathi: "mr",
-  Tamil: "ta", Gujarati: "gu", Urdu: "ur", Kannada: "kn", Odia: "or",
-  Punjabi: "pa", Malayalam: "ml"
-};
-
-// FontAwesome robot icon
-const RobotIcon = () => (
-  <i className="fa-solid fa-robot" style={{ fontSize: 22, marginRight: 8 }}></i>
-);
+const topics = [
+  { label: "📄 Upload PDF", value: "pdf" },
+  { label: "🤖 Text Q&A", value: "text" },
+  { label: "🎦 Video Recommendation", value: "video" },
+  { label: "🗣️ Voice to Text", value: "voice_text" },
+  { label: "🔈 Text to Voice", value: "text_voice" },
+];
 
 export default function ChatBot({ onClose }) {
-  const [language, setLanguage] = useState("English");
   const [chatHistory, setChatHistory] = useState([
-    { text: "🤖 Hello! I'm UjjwalAI. What would you like to know about Artificial Intelligence?", sender: "ai" }
+    { sender: "bot", text: "👋 Welcome! How can I assist you today?" }
   ]);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [userInput, setUserInput] = useState("");
   const chatRef = useRef();
-  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    document.body.classList.toggle('dark', darkMode);
-    return () => { document.body.classList.remove('dark'); };
-  }, [chatHistory, darkMode]);
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
-  const addMessage = (text, sender) => {
-    setChatHistory(prev => [...prev, { text, sender }]);
+  const handleTopic = (topic) => {
+    setSelectedTopic(topic);
+    let response = "";
+    switch (topic) {
+      case "pdf":
+        response = "You can upload a PDF and ask any question. I'll extract text and answer based on the PDF's content.";
+        break;
+      case "text":
+        response = "Type your questions and I'll answer instantly based on our AI-powered text generation.";
+        break;
+      case "video":
+        response = "Get tailored video recommendations based on your queries or interests.";
+        break;
+      case "voice_text":
+        response = "Use your voice to ask questions! I'll convert speech to text and answer accordingly.";
+        break;
+      case "text_voice":
+        response = "Want to listen to answers? I'll convert text responses into speech for you.";
+        break;
+      default:
+        response = "How can I assist you today?";
+    }
+    setChatHistory(h => [...h, { sender: "bot", text: response }]);
   };
 
   const sendMessage = () => {
     if (!userInput.trim()) return;
-    const message = userInput.trim();
-    addMessage(message, "user");
-    setUserInput("");
-
+    setChatHistory(h => [...h, { sender: "user", text: userInput }]);
     setTimeout(() => {
-      let reply = message.toLowerCase().includes("reinforcement learning") ?
-        "Reinforcement learning is a type of machine learning where an agent learns by interacting with its environment and receiving feedback as rewards or penalties." :
-        "Sorry, I do not have an answer to that question yet.";
-      addMessage(reply, "ai");
-    }, 900);
+      setChatHistory(h => [...h, { sender: "bot", text: "Thanks! I'll get back to you based on your input." }]);
+    }, 800);
+    setUserInput("");
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = e => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  const handleClearChat = () => setChatHistory([]);
-
   return (
-    <div className="chatbot-container">
-      <header className="chatbot-header">
-        {/* FontAwesome robot icon + app name */}
-        <span><RobotIcon /> InteractPDF.AI</span>
-        <div>
-          {/* Language selector */}
-          <select
-            value={language}
-            onChange={e => setLanguage(e.target.value)}
-            aria-label="Select Language"
-          >
-            {Object.keys(languages).map(lang => (
-              <option key={lang} value={lang}>{lang}</option>
-            ))}
-          </select>
-          {/* Dark mode toggle */}
-          <button onClick={() => setDarkMode(d => !d)} title="Toggle Dark Mode">
-            <i className={`fa-solid fa-moon${darkMode ? " fa-beat" : ""}`}></i>
-          </button>
-          {/* Clear chat */}
-          <button onClick={handleClearChat} title="Clear Chat">
-            <i className="fa-solid fa-trash"></i>
-          </button>
-          {/* Close chat */}
-          <button onClick={onClose} title="Close Bot">
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-      </header>
-      <div className="chat-context">
-        Context: <input type="number" value="5" min="1" max="20" style={{ width: 50 }} disabled />
+    <div className="modern-chatbot-container small-size" role="region" aria-label="Chatbot interface">
+      <div className="modern-chatbot-header">
+        <span className="modern-chatbot-avatar" aria-label="Chatbot logo">
+          <span role="img" aria-hidden="true">🤖</span>
+        </span>
+        <span className="modern-chatbot-title">UjjwalAI</span>
+        <button
+          className="modern-chatbot-close"
+          onClick={onClose}
+          title="Close chatbot"
+          aria-label="Close chatbot"
+        >
+          <i className="fa-solid fa-xmark"></i>
+        </button>
       </div>
-      <div className="chat-history" id="chat-history" ref={chatRef}>
+      <div className="modern-chatbot-status" aria-live="polite">
+        <span className="modern-chatbot-status-indicator" aria-hidden="true"></span> We usually reply within 5 minutes
+      </div>
+
+      <div className="modern-chatbot-history" ref={chatRef} role="log" aria-live="polite" aria-relevant="additions">
         {chatHistory.map((msg, i) => (
-          <div
-            key={i}
-            className={`chat-message ${msg.sender}`}
-            dangerouslySetInnerHTML={{ __html: marked.parse(msg.text) }}
-          />
+          <div key={i} className={`modern-chatbot-message ${msg.sender}`} aria-label={`${msg.sender === 'bot' ? 'Bot' : 'User'} message`}>
+            {msg.text}
+          </div>
         ))}
+        {!selectedTopic && (
+          <div className="modern-chatbot-topic-list">
+            <div className="modern-chatbot-topic-label">
+              Please choose one of the features below 👇
+            </div>
+            <div className="modern-chatbot-topics">
+              {topics.map(topic => (
+                <button
+                  key={topic.value}
+                  className="modern-chatbot-topic-btn"
+                  onClick={() => handleTopic(topic.value)}
+                >
+                  {topic.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-      <div className="input-section">
+
+      <div className="modern-chatbot-input-section">
         <input
+          className="modern-chatbot-input"
           type="text"
-          className="chat-input"
           value={userInput}
           onChange={e => setUserInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type or speak..."
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+          autoComplete="off"
+          spellCheck={false}
+          aria-label="Type your message"
         />
         <button
-          id="send-btn"
+          className="modern-chatbot-send"
           onClick={sendMessage}
-          title="Send message"
           disabled={!userInput.trim()}
+          aria-label="Send message"
+          title="Send message"
         >
           <i className="fa-solid fa-paper-plane"></i>
         </button>

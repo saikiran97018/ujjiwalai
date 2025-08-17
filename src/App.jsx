@@ -11,30 +11,33 @@ import Pricing from "./components/sections/Pricing";
 import Contact from "./components/sections/Contact";
 import FAQ from "./components/sections/FAQ";
 import ChatBot from "./components/bot/ChatBot";
+import DocumentBot from "./components/bot/DocumentBot";
+import ScrollToTopButton from "./components/ui/ScrollToTopButton";
 
 function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isInfoBotOpen, setIsInfoBotOpen] = useState(false);
+  const [isDocumentBotOpen, setIsDocumentBotOpen] = useState(false);
 
   return (
     <>
-      <Navbar />
+      <Navbar onGetStarted={() => setIsDocumentBotOpen(true)} />
+      <div style={{ height: 56 }} /> {/* Spacer for fixed navbar */}
 
-      {/* Your content sections */}
-      <Hero />
+     <Hero style={{ paddingTop: "64px" }} />
       <About />
       <Features />
       <SignupLogin />
       <Demo />
+      {/* <TestimonialDemo /> -- REMOVE OR COMMENT OUT THIS LINE */}
       <Testimonials />
       <Pricing />
       <Contact />
       <FAQ />
       <Footer />
 
-      {/* Floating Chat Icon Button */}
       <button
-        onClick={() => setIsChatOpen((prev) => !prev)}
-        aria-label={isChatOpen ? "Close ChatBot" : "Open ChatBot"}
+        onClick={() => setIsInfoBotOpen((prev) => !prev)}
+        aria-label={isInfoBotOpen ? "Close Info ChatBot" : "Open Info ChatBot"}
         style={{
           position: "fixed",
           bottom: 30,
@@ -45,7 +48,7 @@ function App() {
           backgroundColor: "#6366f1",
           border: "none",
           color: "white",
-          fontSize: "30px",
+          fontSize: 30,
           cursor: "pointer",
           boxShadow: "0 4px 12px rgba(99, 102, 241, 0.5)",
           display: "flex",
@@ -58,20 +61,39 @@ function App() {
         💬
       </button>
 
-      {/* ChatBot popup */}
-      {isChatOpen && (
+      {isInfoBotOpen && (
         <div
           style={{
             position: "fixed",
             bottom: 100,
             right: 30,
             zIndex: 1200,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.2)"
+            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+            borderRadius: 12,
+            overflow: "hidden",
           }}
         >
-          <ChatBot onClose={() => setIsChatOpen(false)} />
+          <ChatBot onClose={() => setIsInfoBotOpen(false)} />
         </div>
       )}
+
+      {isDocumentBotOpen && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 100,
+            right: 30,
+            zIndex: 1300,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+            borderRadius: 12,
+            overflow: "hidden",
+          }}
+        >
+          <DocumentBot onClose={() => setIsDocumentBotOpen(false)} />
+        </div>
+      )}
+
+      <ScrollToTopButton />
     </>
   );
 }
